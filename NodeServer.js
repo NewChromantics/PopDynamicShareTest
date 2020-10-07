@@ -5,18 +5,12 @@ const fileUpload = require( 'express-fileupload' );
 const app = express()
 const { spawn } = require( "child_process" );
 
-const pjson = require('./package.json');
 const port = 3000;
 const TimeOutLimit = 120000; // 2 mins
 
 const PopExe = "./node_modules/@newchromantics/popengine/ubuntu-latest/PopEngineTestApp"
-const RaymonBootPath = "./node_modules/@newchromantics/heizenradar_raymon/"
-let RayDataFilename;
-let SceneObjFilename;
-let ZipSaveLocation;
+const PopTestImagePath = "./PopTestImage/"
 
-let log = `Server Version: ${pjson.version}`;
-log += `HeizenRadar Raymon Version: ${pjson.dependencies["@newchromantics/heizenradar_raymon"]}\n`;
 
 // Send log on timeout
 app.use( ( req, res, next ) =>
@@ -71,7 +65,7 @@ function ServerResponse(res, value) {
 // Runs the Raymon app and sends back a zip of the data
 function RunApp( res )
 {
-	const Raymon = spawn( PopExe, [ RaymonBootPath, `RayDataFilename=${RayDataFilename}`, `ObjFilename=${SceneObjFilename}`, `ZipSaveLocation=${ZipSaveLocation}` ] );
+	const Raymon = spawn( PopExe, [ PopTestImagePath, `RayDataFilename=${RayDataFilename}`, `ObjFilename=${SceneObjFilename}`, `ZipSaveLocation=${ZipSaveLocation}` ] );
 	log = "";
 	let ZipFile = "";
 	Raymon.stdout.on( "data", ( data ) =>
