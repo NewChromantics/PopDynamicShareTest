@@ -54,7 +54,6 @@ async function RunApp(Request)
 
 	let StdErrlog = null;
 	let StdOutLog = null;
-	let ExitCode = null;
 
 	function OnStdOut(Data)
 	{
@@ -71,12 +70,12 @@ async function RunApp(Request)
 		ProcessPromise.Reject(Error.message);
 	}
 
-	function OnProcessExit(ProcessExitCode)
+	function OnProcessExit(ExitCode)
 	{
 		if (ExitCode != 0)
 		{
 			const Error = {};
-			Error.message = `Process non-zero exit code ${ProcessExitCode}; StdOut=${StdOutLog} StdErr=${StdErrlog}`;
+			Error.message = `Process non-zero exit code ${ExitCode}; StdOut=${StdOutLog} StdErr=${StdErrlog}`;
 			OnError(Error);
 			return;
 		}
@@ -94,7 +93,7 @@ async function RunApp(Request)
 	Result.Mime = 'image/png';
 	Result.Output = Output;
 
-	return Resut;
+	return Result;
 }
 
 async function HandleGetImage(Request,Response)
@@ -105,7 +104,7 @@ async function HandleGetImage(Request,Response)
 		Output.StatusCode = Output.StatusCode || 200;
 		Output.Mime = Output.Mime || 'text/plain';
 
-		Response.statusCode = Output.Status;
+		Response.statusCode = Output.StatusCode;
 		Response.setHeader('Content-Type',Output.Mime);
 		Response.end(Output.Output);
 	}
