@@ -1,14 +1,14 @@
 const os = require( 'os' );
 const fs = require( 'fs' );
 const express = require( 'express' );
-const fileUpload = require( 'express-fileupload' );
 const app = express()
 const { spawn } = require( "child_process" );
 
 const port = 3000;
 const TimeOutLimit = 120000; // 2 mins
 
-const PopExe = "./node_modules/@newchromantics/popengine/ubuntu-latest/PopEngineTestApp"
+//const PopExe = "./node_modules/@newchromantics/popengine/ubuntu-latest/PopEngineTestApp"
+const PopExe = 'D:/PopEngine/Build/PopEngineApp_Debug_x64/PopEngineApp.exe';
 const PopTestImagePath = "./PopTestImage/"
 
 
@@ -24,16 +24,11 @@ app.use( ( req, res, next ) =>
 	next();
 } );
 
-app.use('/upload', fileUpload(
-	{
-		useTempFiles: true,
-		tempFileDir: os.tmpdir()
-	}),
-);
 
-app.use( '/process', express.json() );
+//app.use( '/process', express.json() );
 
-function ServerResponse(res, value) {
+function ServerResponse(res,value)
+{
 	switch(value)
 	{
 		case "error":
@@ -62,128 +57,92 @@ function ServerResponse(res, value) {
 	};
 }
 
-// Runs the Raymon app and sends back a zip of the data
-function RunApp( res )
+function CreatePromise()
 {
-	const Raymon = spawn( PopExe, [ PopTestImagePath, `RayDataFilename=${RayDataFilename}`, `ObjFilename=${SceneObjFilename}`, `ZipSaveLocation=${ZipSaveLocation}` ] );
-	log = "";
-	let ZipFile = "";
-	Raymon.stdout.on( "data", ( data ) =>
+	let Prom = {};
+	function RunPromise(Resolve,Reject)
 	{
-		console.log( `stdout: ${data}` );
-		log += data;
-		let StringData = data.toString();
-
-		if ( StringData.startsWith( "Zipname" ) )
-		{
-			var Regex = /\w+.zip/
-			let RegexArray = Regex.exec( StringData );
-			console.log( RegexArray[ 0 ] )
-			ZipFile = RegexArray[ 0 ];
-		}
-	} );
-
-	Raymon.stderr.on( "stderr", ( stderr ) =>
-	{
-		log += stderr;
-
-		ServerResponse(res, 'error')
-	} );
-
-	Raymon.on( 'error', ( error ) =>
-	{
-		console.log( `error: ${error.message}` );
-		log += error.message;
-
-		ServerResponse(res, 'error')
-	} );
-
-	Raymon.on( "close", ( code ) =>
-	{
-			console.log("Finished")
-			const filePath = `${RaymonBootPath}${ZipFile}`;
-
-			let stats  = fs.statSync(filePath);
-			if (stats.size < 23)
-			{
-				ServerResponse(res, "nodata")
-			}
-			else
-			{
-				res.download( filePath, e =>
-					{
-						if(e)
-						{
-							console.log(e);
-							ServerResponse(res, 'error')
-						}
-					})
-			}
-	} );
+		Prom.Resolve = Resolve;
+		Prom.Reject = Reject;
+	}
+	Prom.Promise = new Promise(RunPromise);
+	let OutProm = Prom.Promise;
+	OutProm.Resolve = Prom.Resolve;
+	OutProm.Reject = Prom.Reject;
+	return OutProm;
 }
 
-app.post( '/upload', async ( req, res ) =>
+// Runs the Raymon app and sends back a zip of the data
+async function RunApp(Request)
 {
-	if ( !req.files || Object.keys( req.files ).length === 0 )
+	const Args =
+	[
+		PopTestImagePath
+	];
+	const Raymon = spawn( PopExe, Args );
+
+	const ProcessPromise = CreatePromise();
+
+	let StdErrlog = null;
+	let StdOutLog = null;
+	let ExitCode = null;
+
+	function OnStdOut(Data)
 	{
-		return res.status( 400 ).send( 'No files were uploaded.' );
+		StdOutLog += Data;
 	}
 
-	try
+	function OnStdErr(Data)
 	{
-		RayDataFilename = req.files.data.tempFilePath;
-		// remove this if to throw an error if an object is not uploaded
-		if ( req.files.obj )
+		StdErrlog += Data;
+	}
+
+	function OnError(Error)
+	{
+		ProcessPromise.Reject(Error.message);
+	}
+
+	function OnProcessExit(ProcessExitCode)
+	{
+		if (ExitCode != 0)
 		{
-			SceneObjFilename = req.files.obj.filePath;
+			const Error = {};
+			Error.message = `Process non-zero exit code ${ProcessExitCode}; StdOut=${StdOutLog} StdErr=${StdErrlog}`;
+			OnError(Error);
+			return;
 		}
-		else
-		{
-			SceneObjFilename = "Assets/Room3.obj";
-		}
+		ProcessPromise.Resolve(StdOutLog);
 	}
-	catch ( error )
-	{
-		return res.status( 400 ).send( `Wrong key value for the file upload, Must be "data"` );
-	}
+	Raymon.on('error',OnError);
+	//	gr: odd that these are different event names?
+	Raymon.stdout.on('data',OnStdOut);
+	Raymon.stderr.on('stderr',OnStdErr);
+	Raymon.on("close",OnProcessExit);
 
-	try
-	{
-		RunApp( res )
-	}
-	catch ( error )
-	{
-		console.log( error );
-	}
-} );
+	const Result = await ProcessPromise;
+	return Resut;
+}
 
-app.post( '/process', async ( req, res ) =>
+async function HandleGetImage(Request,Response)
 {
-	if( typeof req.body !== 'object')
-	{
-		return res.status( 400 ).send( 'JSON Object not uploaded.' );
-	}
-
-	RayDataFilename = req.body.FilePath;
-	ZipSaveLocation = req.body.ZipOutputPath;
-	if ( req.body.ObjPath )
-	{
-		SceneObjFilename = req.body.ObjPath;
-	}
-	else
-	{
-		SceneObjFilename = "Assets/Room3.obj";
-	}
-
 	try
 	{
-		RunApp( res )
+		const Output = await RunApp(Request);
+		Response.statusCode = 200;
+		//	get mime from Output
+		Response.setHeader('Content-Type','text/plain');
+		Response.end(Output);
 	}
-	catch ( error )
+	catch (e)
 	{
-		console.log( error );
+		Response.statusCode = 200;
+		Response.setHeader('Content-Type','text/plain');
+		Response.end(`Error ${e}`);
 	}
+}
 
-})
+
+app.get('/Image',HandleGetImage);
+
 
 app.listen( port, () => console.log( `Server running port: ${port}/` ) );

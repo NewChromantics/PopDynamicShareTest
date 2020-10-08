@@ -6,9 +6,7 @@
   "version": "0.0.3",
   "main": "PopTestImage/bootup.js",
   "dependencies": {
-    "@newchromantics/popengine": "latest",
-    "express": "^4.17.1",
-    "express-fileupload": "^1.2.0"
+    "express": "^4.17.1"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

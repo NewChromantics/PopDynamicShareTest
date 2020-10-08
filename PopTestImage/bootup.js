@@ -6,5 +6,6 @@ const Pixels = new Uint8Array(RedPixel);
 OutputImage.WritePixels( 1, 1, Pixels, 'RGBA' );
 const Png = OutputImage.GetPngData();
 
+Pop.ExitApplication(123);
 //  output png to... stdout?
-throw `Now output file`;
+//throw `Now output file`;
