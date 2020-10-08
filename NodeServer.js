@@ -5,7 +5,7 @@ const app = express()
 const { spawn } = require( "child_process" );
 
 const port = 3000;
-const TimeOutLimit = 120000; // 2 mins
+const TimeOutLimit = 2 * 60 * 1000; // 2 mins
 
 //const PopExe = "./node_modules/@newchromantics/popengine/ubuntu-latest/PopEngineTestApp"
 const PopExe = 'D:/PopEngine/Build/PopEngineApp_Debug_x64/PopEngineApp.exe';
@@ -17,45 +17,14 @@ app.use( ( req, res, next ) =>
 {
 	res.setTimeout( TimeOutLimit, function ()
 	{
-		console.log( 'Request has timed out.' );
-		ServerResponse( res, "timeout" )
+		res.statusCode = 400;
+		res.setHeader('Content-Type','text/plain');
+		res.end(`Request Timeout`);
 	} );
 
 	next();
 } );
 
-
-//app.use( '/process', express.json() );
-
-function ServerResponse(res,value)
-{
-	switch(value)
-	{
-		case "error":
-			res.statusCode = 500;
-			res.setHeader( 'Content-Type', 'text/plain' );
-			res.end( `ERROR LOG: \n${log}` );
-			break;
-
-		case "success":
-			res.statusCode = 200;
-			res.setHeader( 'Content-Type', 'text/plain' );
-			res.end("Success");
-			break;
-
-		case "timeout":
-			res.statusCode = 400;
-			res.setHeader( 'Content-Type', 'text/plain' );
-			res.end( `Request Timeout: \n${log}` );
-			break;
-
-		case "nodata":
-			res.statusCode = 400;
-			res.setHeader( 'Content-Type', 'text/plain' );
-			res.end( `No data: \n${log}` );
-			break;
-	};
-}
 
 function CreatePromise()
 {
