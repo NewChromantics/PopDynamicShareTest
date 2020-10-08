@@ -88,7 +88,12 @@ async function RunApp(Request)
 	Raymon.stderr.on('stderr',OnStdErr);
 	Raymon.on("close",OnProcessExit);
 
-	const Result = await ProcessPromise;
+	const Output = await ProcessPromise;
+
+	const Result = {};
+	Result.Mime = 'image/png';
+	Result.Output = Output;
+
 	return Resut;
 }
 
@@ -97,10 +102,12 @@ async function HandleGetImage(Request,Response)
 	try
 	{
 		const Output = await RunApp(Request);
-		Response.statusCode = 200;
-		//	get mime from Output
-		Response.setHeader('Content-Type','text/plain');
-		Response.end(Output);
+		Output.StatusCode = Output.StatusCode || 200;
+		Output.Mime = Output.Mime || 'text/plain';
+
+		Response.statusCode = Output.Status;
+		Response.setHeader('Content-Type',Output.Mime);
+		Response.end(Output.Output);
 	}
 	catch (e)
 	{
