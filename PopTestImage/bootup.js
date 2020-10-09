@@ -1,7 +1,7 @@
 Pop.Debug(`Hello.`);
 
 
-async function Main()
+async function GeneratePng()
 {
 	const RedPixel = [255,100,0,255];
 	const OutputImage = new Pop.Image();
@@ -21,7 +21,26 @@ async function Main()
 	const CompressionLevel = 0.5;
 	const Png = OutputImage.GetPngData(CompressionLevel);
 
-	Pop.StdOut(Png);
-	Pop.ExitApplication(0);
+	return Png;
 };
+
+async function Main()
+{
+	try
+	{
+		Pop.Debug(`GeneratePng...`);
+		const Png = await GeneratePng();
+		//throw 'xxx';
+		Pop.Debug(`out...`);
+		Pop.StdOut(Png);
+		Pop.ExitApplication(0);
+		Pop.Debug(`done`);
+	}
+	catch (e)
+	{
+		Pop.Debug(`error ${e}`);
+		Pop.StdOut(e);
+		Pop.ExitApplication(1);
+	}
+}
 Main();
