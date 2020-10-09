@@ -7,8 +7,8 @@ const { spawn } = require( "child_process" );
 const port = 3000;
 const TimeOutLimit = 2 * 60 * 1000; // 2 mins
 
-//const PopExe = "./node_modules/@newchromantics/popengine/ubuntu-latest/PopEngineTestApp"
-const PopExe = 'D:/PopEngine/Build/PopEngineApp_Debug_x64/PopEngineApp.exe';
+const PopExe = "./node_modules/@newchromantics/popengine/ubuntu-latest/PopEngineTestApp"
+//const PopExe = 'D:/PopEngine/Build/PopEngineApp_Debug_x64/PopEngineApp.exe';
 const PopTestImagePath = "./PopTestImage/"
 
 
