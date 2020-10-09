@@ -52,17 +52,26 @@ async function RunApp(Request)
 
 	const ProcessPromise = CreatePromise();
 
-	let StdErrlog = null;
+	let StdErrlog = '';
 	let StdOutLog = null;
 
 	function OnStdOut(Data)
 	{
-		StdOutLog += Data;
+		//	gr: this is confusing, you can use Buffer as a string, or as a Buffer object
+		//		JSON.stringify is misleading, the .data isn't really there
+
+		//console.log(`typeof Data.data ${typeof Data}`);
+		if (!StdOutLog)
+			StdOutLog = Data;
+		else
+			StdOutLog = Buffer.concat([StdOutLog,Data.data]);
 	}
 
 	function OnStdErr(Data)
 	{
+		//console.log(`OnStdErr(typeof Data ${typeof Data})`, JSON.stringify(Data));
 		StdErrlog += Data;
+		//console.log(`stderr>${Data}`);
 	}
 
 	function OnError(Error)
@@ -79,12 +88,13 @@ async function RunApp(Request)
 			OnError(Error);
 			return;
 		}
-		ProcessPromise.Resolve(StdOutLog);
+		const StdOutBuffer = Buffer.from(StdOutLog);
+		ProcessPromise.Resolve(StdOutBuffer);
 	}
 	Raymon.on('error',OnError);
 	//	gr: odd that these are different event names?
 	Raymon.stdout.on('data',OnStdOut);
-	Raymon.stderr.on('stderr',OnStdErr);
+	Raymon.stderr.on('data',OnStdErr);
 	Raymon.on("close",OnProcessExit);
 
 	const Output = await ProcessPromise;
