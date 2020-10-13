@@ -4,10 +4,13 @@ const express = require( 'express' );
 const app = express()
 const { spawn } = require( "child_process" );
 
-const port = 3000;
+const port = 4000;
 const TimeOutLimit = 2 * 60 * 1000; // 2 mins
+let ImageCounter = 1;
 
-const PopExe = "./node_modules/@newchromantics/popengine/ubuntu-latest/PopEngineTestApp"
+
+const PopExe = '/Users/graham/Library/Developer/Xcode/DerivedData/PopEngine-edqmtlsljjncjvezlgagcmlvpbob/Build/Products/Debug_JavascriptCore/PopEngine.app/Contents/MacOS/PopEngine';
+//const PopExe = "./node_modules/@newchromantics/popengine/ubuntu-latest/PopEngineTestApp"
 //const PopExe = 'D:/PopEngine/Build/PopEngineApp_Debug_x64/PopEngineApp.exe';
 const PopTestImagePath = "./PopTestImage/"
 
@@ -46,7 +49,8 @@ async function RunApp(Request)
 {
 	const Args =
 	[
-		PopTestImagePath
+		PopTestImagePath,
+		`ImageCounter=${ImageCounter}`,
 	];
 	const Raymon = spawn( PopExe, Args );
 
@@ -60,11 +64,17 @@ async function RunApp(Request)
 		//	gr: this is confusing, you can use Buffer as a string, or as a Buffer object
 		//		JSON.stringify is misleading, the .data isn't really there
 
-		//console.log(`typeof Data.data ${typeof Data}`);
+		console.log(`typeof Data.data ${typeof Data}`, JSON.stringify(Data));
 		if (!StdOutLog)
+		{
+			console.log('StdOutLog = Data;');
 			StdOutLog = Data;
+		}
 		else
-			StdOutLog = Buffer.concat([StdOutLog,Data.data]);
+		{
+			console.log(`Buffer.concat(${StdOutLog},${Data})`);
+			StdOutLog = Buffer.concat([StdOutLog,Data]);
+		}
 	}
 
 	function OnStdErr(Data)
@@ -81,10 +91,12 @@ async function RunApp(Request)
 
 	function OnProcessExit(ExitCode)
 	{
-		if (ExitCode != 0)
+		console.log(`OnProcessExit(${ExitCode}) null=crash`);
+		if (ExitCode !== 0)
 		{
 			const Error = {};
-			Error.message = `Process non-zero exit code ${ExitCode}; StdOut=${StdOutLog} StdErr=${StdErrlog}`;
+			//Error.message = `Process non-zero exit code ${ExitCode}; StdOut=${StdOutLog} StdErr=${StdErrlog}`;
+			Error.message = `Process non-zero exit code ${ExitCode}; StdErr=${StdErrlog}`;
 			OnError(Error);
 			return;
 		}
@@ -110,6 +122,8 @@ async function HandleGetImage(Request,Response)
 {
 	try
 	{
+		ImageCounter++;
+		
 		const Output = await RunApp(Request);
 		Output.StatusCode = Output.StatusCode || 200;
 		Output.Mime = Output.Mime || 'text/plain';
@@ -120,6 +134,7 @@ async function HandleGetImage(Request,Response)
 	}
 	catch (e)
 	{
+		console.log(`RunApp error -> ${e}`);
 		Response.statusCode = 200;
 		Response.setHeader('Content-Type','text/plain');
 		Response.end(`Error ${e}`);
