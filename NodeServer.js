@@ -5,7 +5,7 @@ const app = express()
 const { spawn } = require( "child_process" );
 
 const Port = process.env.Port || 80;	//	gr: needs to be int?
-const FailOnExitCode = (process.env.FailOnExitCode!=='false') || true; 
+const FailOnExitCode = (process.env.FailOnExitCode!=='false');
 const Timeout_Default = 2 * 60;
 const TimeoutSecs = process.env.TimeoutSecs ||  Timeout_Default;
 let ImageCounter = 1;
@@ -19,15 +19,16 @@ const PopExe = process.env.PopExePath || PopExe_Module || PopExe_Osx;
 const PopTestPath = process.env.PopTestPath || "./PopTestImage/";
 
 console.log(`v0.0.4`);
-console.log(`env Port -> ${Port}`);
-console.log(`env PopExePath -> ${PopExe}`);
-console.log(`env PopTestPath -> ${PopTestPath}`);
-console.log(`env TimeoutSecs -> ${TimeoutSecs}`);
-console.log(`env ErrorStatusCode -> ${ErrorStatusCode}`);
-console.log(`env FailOnExitCode -> ${FailOnExitCode}`);
+console.log(`env Port -> ${Port} (${process.env.Port})`);
+console.log(`env PopExePath -> ${PopExe} (${process.env.PopExePath})`);
+console.log(`env PopTestPath -> ${PopTestPath} (${process.env.PopTestPath})`);
+console.log(`env TimeoutSecs -> ${TimeoutSecs} (${process.env.TimeoutSecs})`);
+console.log(`env ErrorStatusCode -> ${ErrorStatusCode} (${process.env.ErrorStatusCode})`);
+console.log(`env FailOnExitCode -> ${FailOnExitCode} (${process.env.FailOnExitCode})`);
 try
 {
-	console.log(`env (all) ${JSON.stringify(process.env,null,'\t')}`);
+	const AllEnv = JSON.stringify(process.env,null,'\t');
+	console.log(`env (all) ${AllEnv}`);
 }
 catch(e)
 {
