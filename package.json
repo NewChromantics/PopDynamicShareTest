@@ -6,6 +6,7 @@
   "version": "0.0.3",
   "main": "PopTestImage/bootup.js",
   "dependencies": {
+    "@newchromantics/popengine": "^0.0.22",
     "express": "^4.17.1"
   },
   "scripts": {
