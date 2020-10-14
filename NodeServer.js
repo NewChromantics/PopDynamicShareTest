@@ -4,8 +4,8 @@ const express = require( 'express' );
 const app = express()
 const { spawn } = require( "child_process" );
 
-const Port = process.env.Port || 80;
-
+const Port = process.env.Port || 80;	//	gr: needs to be int?
+const FailOnExitCode = (process.env.FailOnExitCode=='true') || true; 
 const Timeout_Default = 2 * 60;
 const TimeoutSecs = process.env.TimeoutSecs ||  Timeout_Default;
 let ImageCounter = 1;
@@ -23,6 +23,7 @@ console.log(`env PopExePath -> ${PopExe}`);
 console.log(`env PopTestPath -> ${PopTestPath}`);
 console.log(`env TimeoutSecs -> ${TimeoutSecs}`);
 console.log(`env ErrorStatusCode -> ${ErrorStatusCode}`);
+console.log(`env FailOnExitCode -> ${FailOnExitCode}`);
 
 
 // Send log on timeout
@@ -102,7 +103,7 @@ async function RunApp(Request)
 	function OnProcessExit(ExitCode)
 	{
 		console.log(`OnProcessExit(${ExitCode}) null=crash`);
-		if (ExitCode !== 0)
+		if (ExitCode !== 0 && FailOnExitCode )
 		{
 			const Error = {};
 			//Error.message = `Process non-zero exit code ${ExitCode}; StdOut=${StdOutLog} StdErr=${StdErrlog}`;
