@@ -1,18 +1,10 @@
 steps:
   # setup npm auth
-- name: gcr.io/cloud-builders/gcloud
-  entrypoint: /bin/bash
-  args: ['-c', '@newchromantics:registry=https://npm.pkg.github.com > .npmrc']
-
-- name: gcr.io/cloud-builders/gcloud
-  entrypoint: /bin/bash
-  args: ['-c', '//npm.pkg.github.com/:_authToken= >> .npmrc']
-
+  # gr: .npmrc now in repository, just needs secret key adding
   # decrypy the secret directly into the auth file 
 - name: gcr.io/cloud-builders/gcloud
   entrypoint: 'bash'
   args: [ '-c', "gcloud secrets versions access latest --secret=NEWCHROMANTICS_PACKAGE_KEY_KANDINSKYCLOUDBUILD --format='get(payload.data)' | tr '_-' '/+' | base64 -d >> .npmrc" ]
- 
     
   # gr: name isn't a nice name, it's a specific command :)
 - name: node
