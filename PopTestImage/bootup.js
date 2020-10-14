@@ -41,23 +41,25 @@ if ( Array.isArray(ExeArgs) )
 
 async function GeneratePng()
 {
-	const Red = ExeArgs.Red || 255;
-	const Green = ExeArgs.Green || 100;
+	const Red = ExeArgs.Red || 0;
+	const Green = ExeArgs.Green || 0;
 	const Blue = ExeArgs.Blue || 0;
 	const Alpha = 255;
 	
-	const RedPixel = [Red,Green,Blue,Alpha];
+	const BgPixel = [Red,Green,Blue];
+	const FgPixel = (Math.max(...BgPixel) > 128) ? [0,0,0] : [255,255,255];
+	
 	const OutputImage = new Pop.Image();
 	const Width = ExeArgs.ImageWidth || 40;
 	const Height = ExeArgs.ImageHeight || 40;
-	const Channels = RedPixel.length;
+	const Channels = 4;
 	const Pixels = new Uint8Array(Width * Height * Channels);
-	for (let i = 0;i < Pixels.length;i += RedPixel.length)
+	for (let i=0;	i<Pixels.length;	i+=Channels)
 	{
-		Pixels[i + 0] = RedPixel[0];
-		Pixels[i + 1] = RedPixel[1];
-		Pixels[i + 2] = RedPixel[2];
-		Pixels[i + 3] = RedPixel[3];
+		Pixels[i + 0] = BgPixel[0];
+		Pixels[i + 1] = BgPixel[1];
+		Pixels[i + 2] = BgPixel[2];
+		Pixels[i + 3] = Alpha;
 	}
 	
 	function SetPixel(x,y,rgba)
@@ -67,10 +69,10 @@ async function GeneratePng()
 		
 		if ( PixelIndex < 0 || PixelIndex >= Pixels.length )
 			return;
-		Pixels[PixelIndex + 0] = rgba[0];
-		Pixels[PixelIndex + 1] = rgba[1];
-		Pixels[PixelIndex + 2] = rgba[2];
-		Pixels[PixelIndex + 3] = rgba[3];
+		Pixels[PixelIndex + 0] = FgPixel[0];
+		Pixels[PixelIndex + 1] = FgPixel[1];
+		Pixels[PixelIndex + 2] = FgPixel[2];
+		Pixels[PixelIndex + 3] = Alpha;
 	}
 		
 	//	draw image counter as dots

@@ -4,6 +4,9 @@ const express = require( 'express' );
 const app = express()
 const { spawn } = require( "child_process" );
 
+
+const OsxMode = os.platform() == 'darwin';
+
 const Port = process.env.Port || 80;	//	gr: needs to be int?
 const FailOnExitCode = (process.env.FailOnExitCode!=='false');
 const Timeout_Default = 2 * 60;
@@ -17,13 +20,10 @@ const ImageWidth = process.env.ImageWidth || 40;
 const ImageHeight = process.env.ImageHeight || 40;
 //const ImageScale = process.env.ImageScale || 1;
 //const ImageCompression = process.env.ImageCompression || 0.5;
-const ImageColourRed = 1;
-const ImageColourGreen = 255;
-const ImageColourBlue = 255;
 
 const PopExe_Module = "./node_modules/@newchromantics/popengine/ubuntu-latest/PopEngineTestApp";
 const PopExe_Osx = '/Users/graham/Library/Developer/Xcode/DerivedData/PopEngine-edqmtlsljjncjvezlgagcmlvpbob/Build/Products/Debug_JavascriptCore/PopEngine.app/Contents/MacOS/PopEngine';
-const PopExe = process.env.PopExePath || PopExe_Module || PopExe_Osx;
+const PopExe = OsxMode ? PopExe_Osx : (process.env.PopExePath || PopExe_Module);
 //const PopExe = "./node_modules/@newchromantics/popengine/ubuntu-latest/PopEngineTestApp"
 //const PopExe = 'D:/PopEngine/Build/PopEngineApp_Debug_x64/PopEngineApp.exe';
 const PopTestPath = process.env.PopTestPath || "./PopTestImage/";
@@ -47,6 +47,7 @@ catch(e)
 	console.log(`env (all) error -> ${e}`);
 }
 
+/*
 // Send log on timeout
 app.use( ( req, res, next ) =>
 {
@@ -59,7 +60,7 @@ app.use( ( req, res, next ) =>
 
 	next();
 } );
-
+*/
 
 function CreatePromise()
 {
@@ -76,18 +77,32 @@ function CreatePromise()
 	return OutProm;
 }
 
+function HexStringToRgb(HexString)
+{
+	const r = parseInt( HexString.slice(0,2), 16 ) || 0;
+	const g = parseInt( HexString.slice(2,4), 16 ) || 0;
+	const b = parseInt( HexString.slice(4,6), 16 ) || 0;
+
+	return [r,g,b];	
+}
+
 // Runs the Raymon app and sends back a zip of the data
 async function RunApp(Request)
 {
+	//	extract params from the request url
+	//	Request.path -> /hello.png
+	const UrlPath = Request.path.slice(1,-4);	//	strip / and .png
+	const rrggbb = HexStringToRgb(UrlPath);
+
 	const Args =
 	[
 		PopTestPath,
 		`ImageCounter=${ImageCounter}`,
 		`ImageWidth=${ImageWidth}`,
 		`ImageHeight=${ImageHeight}`,
-		`Red=${ImageColourRed}`,
-		`Green=${ImageColourGreen}`,
-		`Blue=${ImageColourBlue}`,
+		`Red=${rrggbb[0]}`,
+		`Green=${rrggbb[1]}`,
+		`Blue=${rrggbb[2]}`,
 	];
 	const Raymon = spawn( PopExe, Args );
 
@@ -179,8 +194,7 @@ async function HandleGetImage(Request,Response)
 }
 
 
-app.get('/Image',HandleGetImage);
-app.get('/Image.png',HandleGetImage);
+app.get('/*.png',HandleGetImage);
 app.get('/', function (req, res) { res.redirect('/index.html') });
 app.use('/', express.static(StaticFilesPath));
 
