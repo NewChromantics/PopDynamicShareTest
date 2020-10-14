@@ -1,0 +1,15 @@
+steps:
+  # setup npm auth
+  # gr: .npmrc now in repository, just needs secret key adding
+  # decrypy the secret directly into the auth file 
+- name: gcr.io/cloud-builders/gcloud
+  entrypoint: 'bash'
+  args: [ '-c', "gcloud secrets versions access latest --secret=NEWCHROMANTICS_PACKAGE_KEY_KANDINSKYCLOUDBUILD --format='get(payload.data)' | tr '_-' '/+' | base64 -d >> .npmrc" ]
+    
+  # gr: name isn't a nice name, it's a specific command :)
+- name: node
+  entrypoint: npm
+  args: ['install']
+  
+- name: 'gcr.io/cloud-builders/docker'
+  args: [ 'build', '-t', 'gcr.io/gweb-kandinsky/github.com/newchromantics/popdynamicsharetest:$SHORT_SHA', '.' ]
