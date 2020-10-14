@@ -17,6 +17,12 @@ jobs:
         with:
           submodules: recursive
 
+      # gr: we now have this file in the repository to make cloud build easier, but this breaks the github action build
+      - name: Remove File
+        uses: JesseTG/rm@v1.0.2
+        with:
+          path: .npmrc    
+
       - name: Configure Node
         uses: actions/setup-node@v1
         with:
