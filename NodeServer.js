@@ -10,6 +10,7 @@ const Timeout_Default = 2 * 60;
 const TimeoutSecs = process.env.TimeoutSecs ||  Timeout_Default;
 let ImageCounter = 1;
 const ErrorStatusCode = process.env.ErrorStatusCode || 500;
+const StaticFilesPath = process.env.StaticFilesPath || './';
 
 const PopExe_Module = "./node_modules/@newchromantics/popengine/ubuntu-latest/PopEngineTestApp";
 const PopExe_Osx = '/Users/graham/Library/Developer/Xcode/DerivedData/PopEngine-edqmtlsljjncjvezlgagcmlvpbob/Build/Products/Debug_JavascriptCore/PopEngine.app/Contents/MacOS/PopEngine';
@@ -18,13 +19,13 @@ const PopExe = process.env.PopExePath || PopExe_Module || PopExe_Osx;
 //const PopExe = 'D:/PopEngine/Build/PopEngineApp_Debug_x64/PopEngineApp.exe';
 const PopTestPath = process.env.PopTestPath || "./PopTestImage/";
 
-console.log(`v0.0.5`);
 console.log(`env Port -> ${Port} (${process.env.Port})`);
 console.log(`env PopExePath -> ${PopExe} (${process.env.PopExePath})`);
 console.log(`env PopTestPath -> ${PopTestPath} (${process.env.PopTestPath})`);
 console.log(`env TimeoutSecs -> ${TimeoutSecs} (${process.env.TimeoutSecs})`);
 console.log(`env ErrorStatusCode -> ${ErrorStatusCode} (${process.env.ErrorStatusCode})`);
 console.log(`env FailOnExitCode -> ${FailOnExitCode} (${process.env.FailOnExitCode})`);
+console.log(`env StaticFilesPath -> ${StaticFilesPath} (${process.env.StaticFilesPath})`);
 try
 {
 	const AllEnv = JSON.stringify(process.env,null,'\t');
@@ -163,6 +164,9 @@ async function HandleGetImage(Request,Response)
 
 
 app.get('/Image',HandleGetImage);
+app.get('/Image.png',HandleGetImage);
+app.get('/', function (req, res) { res.redirect('/index.html') });
+app.use('/', express.static(StaticFilesPath));
 
 
 app.listen( Port, () => console.log( `Server running port: ${Port}/` ) );
