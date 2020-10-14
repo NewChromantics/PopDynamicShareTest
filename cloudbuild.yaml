@@ -1,6 +1,7 @@
 steps:
   # gr: need to add auth here!
-- name: Install dependencies via npm
+  # gr: name isn't a nice name, it's a specific command :)
+- name: node
   entrypoint: npm
   args: ['install']
   
