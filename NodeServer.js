@@ -18,7 +18,7 @@ const PopExe = process.env.PopExePath || PopExe_Module || PopExe_Osx;
 //const PopExe = 'D:/PopEngine/Build/PopEngineApp_Debug_x64/PopEngineApp.exe';
 const PopTestPath = process.env.PopTestPath || "./PopTestImage/";
 
-console.log(`v0.0.4`);
+console.log(`v0.0.5`);
 console.log(`env Port -> ${Port} (${process.env.Port})`);
 console.log(`env PopExePath -> ${PopExe} (${process.env.PopExePath})`);
 console.log(`env PopTestPath -> ${PopTestPath} (${process.env.PopTestPath})`);
