@@ -11,6 +11,13 @@ const TimeoutSecs = process.env.TimeoutSecs ||  Timeout_Default;
 let ImageCounter = 1;
 const ErrorStatusCode = process.env.ErrorStatusCode || 500;
 const StaticFilesPath = process.env.StaticFilesPath || './';
+//	twitter meta min 300x157
+//	https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/summary-card-with-large-image
+const ImageWidth = process.env.ImageWidth || 40;	
+const ImageHeight = process.env.ImageHeight || 40;
+const ImageColourRed = 1;
+const ImageColourGreen = 255;
+const ImageColourBlue = 255;
 
 const PopExe_Module = "./node_modules/@newchromantics/popengine/ubuntu-latest/PopEngineTestApp";
 const PopExe_Osx = '/Users/graham/Library/Developer/Xcode/DerivedData/PopEngine-edqmtlsljjncjvezlgagcmlvpbob/Build/Products/Debug_JavascriptCore/PopEngine.app/Contents/MacOS/PopEngine';
@@ -26,6 +33,8 @@ console.log(`env TimeoutSecs -> ${TimeoutSecs} (${process.env.TimeoutSecs})`);
 console.log(`env ErrorStatusCode -> ${ErrorStatusCode} (${process.env.ErrorStatusCode})`);
 console.log(`env FailOnExitCode -> ${FailOnExitCode} (${process.env.FailOnExitCode})`);
 console.log(`env StaticFilesPath -> ${StaticFilesPath} (${process.env.StaticFilesPath})`);
+console.log(`env ImageWidth -> ${ImageWidth} (${process.env.ImageWidth})`);
+console.log(`env ImageHeight -> ${ImageHeight} (${process.env.ImageHeight})`);
 try
 {
 	const AllEnv = JSON.stringify(process.env,null,'\t');
@@ -72,6 +81,11 @@ async function RunApp(Request)
 	[
 		PopTestPath,
 		`ImageCounter=${ImageCounter}`,
+		`ImageWidth=${ImageWidth}`,
+		`ImageHeight=${ImageHeight}`,
+		`Red=${ImageColourRed}`,
+		`Green=${ImageColourGreen}`,
+		`Blue=${ImageColourBlue}`,
 	];
 	const Raymon = spawn( PopExe, Args );
 
@@ -117,7 +131,7 @@ async function RunApp(Request)
 		{
 			const Error = {};
 			//Error.message = `Process non-zero exit code ${ExitCode}; StdOut=${StdOutLog} StdErr=${StdErrlog}`;
-			Error.message = `Process non-zero exit code ${ExitCode}; StdErr=${StdErrlog}`;
+			Error.message = `Process non-zero exit code ${ExitCode}; StdOut.length=${StdOutLog?StdOutLog.length:'null'} StdErr=${StdErrlog}`;
 			OnError(Error);
 			return;
 		}

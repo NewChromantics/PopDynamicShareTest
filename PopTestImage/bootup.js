@@ -39,13 +39,17 @@ if ( Array.isArray(ExeArgs) )
 
 
 
-
 async function GeneratePng()
 {
-	const RedPixel = [255,100,0,255];
+	const Red = ExeArgs.Red || 255;
+	const Green = ExeArgs.Green || 100;
+	const Blue = ExeArgs.Blue || 0;
+	const Alpha = 255;
+	
+	const RedPixel = [Red,Green,Blue,Alpha];
 	const OutputImage = new Pop.Image();
-	const Width = 40;
-	const Height = 40;
+	const Width = ExeArgs.ImageWidth || 40;
+	const Height = ExeArgs.ImageHeight || 40;
 	const Channels = RedPixel.length;
 	const Pixels = new Uint8Array(Width * Height * Channels);
 	for (let i = 0;i < Pixels.length;i += RedPixel.length)
