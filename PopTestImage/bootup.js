@@ -89,10 +89,12 @@ async function GeneratePng()
 	}	
 	
 	OutputImage.WritePixels(Width,Height,Pixels,'RGBA');
-	const Scale = 2;
-	OutputImage.Resize(Width*Scale,Height*Scale);
+	//	gr: might need to be careful about number vs string
+	const OutputScale = ExeArgs.ImageScale || 1;
+	OutputImage.Resize(Width*OutputScale,Height*OutputScale);
 
-	const CompressionLevel = 0.5;
+	//	gr: might need to be careful about number vs string
+	const CompressionLevel = ExeArgs.ImageCompression || 0.5;
 	const Png = OutputImage.GetPngData(CompressionLevel);
 
 	return Png;

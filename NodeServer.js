@@ -15,6 +15,8 @@ const StaticFilesPath = process.env.StaticFilesPath || './';
 //	https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/summary-card-with-large-image
 const ImageWidth = process.env.ImageWidth || 40;	
 const ImageHeight = process.env.ImageHeight || 40;
+//const ImageScale = process.env.ImageScale || 1;
+//const ImageCompression = process.env.ImageCompression || 0.5;
 const ImageColourRed = 1;
 const ImageColourGreen = 255;
 const ImageColourBlue = 255;
