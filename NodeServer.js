@@ -4,23 +4,33 @@ const express = require( 'express' );
 const app = express()
 const { spawn } = require( "child_process" );
 
-const port = 4000;
-const TimeOutLimit = 2 * 60 * 1000; // 2 mins
+const Port = process.env.Port || 80;
+
+const Timeout_Default = 2 * 60;
+const TimeoutSecs = process.env.TimeoutSecs ||  Timeout_Default;
 let ImageCounter = 1;
+const ErrorStatusCode = process.env.ErrorStatusCode || 500;
 
-
-const PopExe = '/Users/graham/Library/Developer/Xcode/DerivedData/PopEngine-edqmtlsljjncjvezlgagcmlvpbob/Build/Products/Debug_JavascriptCore/PopEngine.app/Contents/MacOS/PopEngine';
+const PopExe_Module = "./node_modules/@newchromantics/popengine/ubuntu-latest/PopEngineTestApp";
+const PopExe_Osx = '/Users/graham/Library/Developer/Xcode/DerivedData/PopEngine-edqmtlsljjncjvezlgagcmlvpbob/Build/Products/Debug_JavascriptCore/PopEngine.app/Contents/MacOS/PopEngine';
+const PopExe = process.env.PopExePath || PopExe_Module || PopExe_Osx;
 //const PopExe = "./node_modules/@newchromantics/popengine/ubuntu-latest/PopEngineTestApp"
 //const PopExe = 'D:/PopEngine/Build/PopEngineApp_Debug_x64/PopEngineApp.exe';
-const PopTestImagePath = "./PopTestImage/"
+const PopTestPath = process.env.PopTestPath || "./PopTestImage/";
+
+console.log(`env Port -> ${Port}`);
+console.log(`env PopExePath -> ${PopExe}`);
+console.log(`env PopTestPath -> ${PopTestPath}`);
+console.log(`env TimeoutSecs -> ${TimeoutSecs}`);
+console.log(`env ErrorStatusCode -> ${ErrorStatusCode}`);
 
 
 // Send log on timeout
 app.use( ( req, res, next ) =>
 {
-	res.setTimeout( TimeOutLimit, function ()
+	res.setTimeout( TimeoutSecs, function ()
 	{
-		res.statusCode = 400;
+		res.statusCode = ErrorStatusCode;
 		res.setHeader('Content-Type','text/plain');
 		res.end(`Request Timeout`);
 	} );
@@ -49,7 +59,7 @@ async function RunApp(Request)
 {
 	const Args =
 	[
-		PopTestImagePath,
+		PopTestPath,
 		`ImageCounter=${ImageCounter}`,
 	];
 	const Raymon = spawn( PopExe, Args );
@@ -135,7 +145,7 @@ async function HandleGetImage(Request,Response)
 	catch (e)
 	{
 		console.log(`RunApp error -> ${e}`);
-		Response.statusCode = 200;
+		Response.statusCode = ErrorStatusCode;
 		Response.setHeader('Content-Type','text/plain');
 		Response.end(`Error ${e}`);
 	}
@@ -145,4 +155,4 @@ async function HandleGetImage(Request,Response)
 app.get('/Image',HandleGetImage);
 
 
-app.listen( port, () => console.log( `Server running port: ${port}/` ) );
+app.listen( Port, () => console.log( `Server running port: ${Port}/` ) );
