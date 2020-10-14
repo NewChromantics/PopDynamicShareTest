@@ -1,5 +1,15 @@
 steps:
-  # gr: need to add auth here!
+  # setup npm auth
+- name: gcr.io/cloud-builders/gcloud
+  entrypoint: /bin/bash
+  args: ['-c', '@newchromantics:registry=https://npm.pkg.github.com > .npmrc']
+
+- name: gcr.io/cloud-builders/gcloud
+  entrypoint: /bin/bash
+  args: ['-c', '//npm.pkg.github.com/:_authToken=${YOUR_AUTH_TOKEN} >> .npmrc']
+  substitutions:
+    YOUR_AUTH_TOKEN: xxxxx # get this from secrets somewhere
+    
   # gr: name isn't a nice name, it's a specific command :)
 - name: node
   entrypoint: npm
