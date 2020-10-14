@@ -18,13 +18,21 @@ const PopExe = process.env.PopExePath || PopExe_Module || PopExe_Osx;
 //const PopExe = 'D:/PopEngine/Build/PopEngineApp_Debug_x64/PopEngineApp.exe';
 const PopTestPath = process.env.PopTestPath || "./PopTestImage/";
 
+console.log(`v0.0.4`);
 console.log(`env Port -> ${Port}`);
 console.log(`env PopExePath -> ${PopExe}`);
 console.log(`env PopTestPath -> ${PopTestPath}`);
 console.log(`env TimeoutSecs -> ${TimeoutSecs}`);
 console.log(`env ErrorStatusCode -> ${ErrorStatusCode}`);
 console.log(`env FailOnExitCode -> ${FailOnExitCode}`);
-console.log(`env (all) ${JSON.stringify(process.env,null,'\t')}`);
+try
+{
+	console.log(`env (all) ${JSON.stringify(process.env,null,'\t')}`);
+}
+catch(e)
+{
+	console.log(`env (all) error -> ${e}`);
+}
 
 // Send log on timeout
 app.use( ( req, res, next ) =>
