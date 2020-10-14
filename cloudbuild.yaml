@@ -6,9 +6,13 @@ steps:
 
 - name: gcr.io/cloud-builders/gcloud
   entrypoint: /bin/bash
-  args: ['-c', '//npm.pkg.github.com/:_authToken=${YOUR_AUTH_TOKEN} >> .npmrc']
-  substitutions:
-    YOUR_AUTH_TOKEN: xxxxx # get this from secrets somewhere
+  args: ['-c', '//npm.pkg.github.com/:_authToken= >> .npmrc']
+
+  # decrypy the secret directly into the auth file 
+- name: gcr.io/cloud-builders/gcloud
+  entrypoint: 'bash'
+  args: [ '-c', "gcloud secrets versions access latest --secret=NEWCHROMANTICS_PACKAGE_KEY_KANDINSKYCLOUDBUILD --format='get(payload.data)' | tr '_-' '/+' | base64 -d >> .npmrc" ]
+ 
     
   # gr: name isn't a nice name, it's a specific command :)
 - name: node
