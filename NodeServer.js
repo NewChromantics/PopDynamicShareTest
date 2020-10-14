@@ -24,7 +24,7 @@ console.log(`env PopTestPath -> ${PopTestPath}`);
 console.log(`env TimeoutSecs -> ${TimeoutSecs}`);
 console.log(`env ErrorStatusCode -> ${ErrorStatusCode}`);
 console.log(`env FailOnExitCode -> ${FailOnExitCode}`);
-
+console.log(`env (all) ${JSON.stringify(process.env,null,'\t')}`);
 
 // Send log on timeout
 app.use( ( req, res, next ) =>
