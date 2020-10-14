@@ -5,7 +5,7 @@ const app = express()
 const { spawn } = require( "child_process" );
 
 const Port = process.env.Port || 80;	//	gr: needs to be int?
-const FailOnExitCode = (process.env.FailOnExitCode=='true') || true; 
+const FailOnExitCode = (process.env.FailOnExitCode!=='false') || true; 
 const Timeout_Default = 2 * 60;
 const TimeoutSecs = process.env.TimeoutSecs ||  Timeout_Default;
 let ImageCounter = 1;
