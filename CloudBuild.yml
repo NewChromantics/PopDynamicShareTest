@@ -1,0 +1,8 @@
+steps:
+  # gr: need to add auth here!
+- name: Install dependencies via npm
+  entrypoint: npm
+  args: ['install']
+  
+- name: 'gcr.io/cloud-builders/docker'
+  args: [ 'build', '-t', 'gcr.io/gweb-kandinsky/github.com/newchromantics/popdynamicsharetest:$SHORT_SHA', '.' ]
