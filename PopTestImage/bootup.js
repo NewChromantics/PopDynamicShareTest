@@ -38,8 +38,12 @@ if ( Array.isArray(ExeArgs) )
 }		
 
 
+async function GenerateOpenglImage()
+{
+	//const Window = new Pop.Gui.Window("Sokol Test");
+}
 
-async function GeneratePng()
+async function GenerateTestImage()
 {
 	const Red = ExeArgs.Red || 0;
 	const Green = ExeArgs.Green || 0;
@@ -94,7 +98,12 @@ async function GeneratePng()
 	//	gr: might need to be careful about number vs string
 	const OutputScale = ExeArgs.ImageScale || 1;
 	OutputImage.Resize(Width*OutputScale,Height*OutputScale);
+	return OutputImage;
+}
 
+async function GeneratePng()
+{
+	const OutputImage = await GenerateTestImage();
 	//	gr: might need to be careful about number vs string
 	const CompressionLevel = ExeArgs.ImageCompression || 0.5;
 	const Png = OutputImage.GetPngData(CompressionLevel);
