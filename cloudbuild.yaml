@@ -10,6 +10,12 @@ steps:
 - name: node
   entrypoint: npm
   args: ['install']
-  
+
+  # gr: build & tag  
 - name: 'gcr.io/cloud-builders/docker'
-  args: [ 'build', '-t', 'gcr.io/gweb-kandinsky/github.com/newchromantics/popdynamicsharetest:$SHORT_SHA', '.' ]
+  args: [ 'build', '-t', 'gcr.io/gweb-kandinsky/imageserver:$SHORT_SHA', '.' ]
+
+  # gr: push to google cloud registry
+- name: 'gcr.io/cloud-builders/docker'
+  args: [ 'push', 'gcr.io/gweb-kandinsky/imageserver:$SHORT_SHA' ]
+  
