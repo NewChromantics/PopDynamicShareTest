@@ -1,14 +1,9 @@
-Implementation Options
-============================
-1. Node.js takes request, runs popengine and gets png/jpeg output
-  - Spin up exe every time, load shaders etc
+PopImageServer
+=======================
+This [test] project generates a docker image, which creates [.png] images on the fly from a node.js server.
+It invokes a PopEngine app which takes args to generate an image with opengl and send it back to the response.
 
-2. Run popengine in docker image with http server
-  - Missed requests during spin up
-  - possible bottleneck http requests
-  
-3. Run node.js, IPC to popengine app
-  - More complex, still bottlenecks?
+Designed specifically to serve dynamic meta images in websites which are facebook & twitter compatible.
 
 
 Implementation notes
