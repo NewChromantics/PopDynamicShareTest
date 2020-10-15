@@ -19,3 +19,12 @@ steps:
 - name: 'gcr.io/cloud-builders/docker'
   args: [ 'push', 'gcr.io/gweb-kandinsky/imageserver:$SHORT_SHA' ]
   
+  # gr: deploy to cloud-run (overwrite existing runner? or create a new one?)
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: [
+        'run', 'deploy', 'kandinsky-imageserver',
+        '--image', 'gcr.io/gweb-kandinsky/imageserver:$SHORT_SHA',
+        '--region', 'us-central1',
+        '--platform', 'managed',
+        '--allow-unauthenticated',
+    ]
