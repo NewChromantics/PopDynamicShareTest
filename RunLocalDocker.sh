@@ -12,4 +12,5 @@ echo "run docker image"
 #gr need
 #	--device=/dev/<device>/dev/<device> to forward a device to container
 #	try /dev/dri
+#https://github.com/GoogleCloudPlatform/container-engine-accelerators/tree/master/cmd/nvidia_gpu
 docker run --publish 8001:80 --env FailOnExitCode=true -t --rm popenginetest_docker_linux 
