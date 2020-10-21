@@ -134,7 +134,7 @@ async function GetScreenQuad_TriangleBuffer(RenderContext)
 }
 
 const TestShader_VertSource =`
-precision highp float;
+// precision highp float;
 attribute vec3 LocalUv;
 attribute vec3 LocalPosition;
 varying vec2 uv;
@@ -146,7 +146,7 @@ void main()
 }
 `;
 const TestShader_FragSource =`
-precision highp float;
+// precision highp float;
 varying vec2 uv;
 void main()
 {
@@ -191,7 +191,7 @@ async function GenerateOpenglImage()
 {
 	//	Headless is a magic name at the moment
 	//	todo: rename to false or null
-	const Window = new Pop.Gui.Window("Headless");
+	const Window = new Pop.Gui.Window("test");
 	const Sokol = new Pop.Sokol.Context(Window, "GLView");
 
 	//	create assets
