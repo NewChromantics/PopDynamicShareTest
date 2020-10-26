@@ -182,10 +182,8 @@ async function GetShader(RenderContext)
 	return TestShader;
 }
 
-async function GetScreenQuad(RenderContext)
-{
-	const ScreenQuad = await GetScreenQuad_TriangleBuffer(RenderContext);
-}
+let ScreenQuad;
+let TestShader;
 
 async function GenerateOpenglImage()
 {
@@ -195,8 +193,8 @@ async function GenerateOpenglImage()
 	const Sokol = new Pop.Sokol.Context(Window, "GLView");
 
 	//	create assets
-	let TestShader = await GetShader(Sokol);
-	let ScreenQuad = await GetScreenQuad(Sokol);
+	ScreenQuad = await GetScreenQuad_TriangleBuffer(Sokol);
+	TestShader = await GetShader(Sokol);
 	
 	const Commands = GetRenderCommands();
 	await Sokol.Render(Commands);
