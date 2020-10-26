@@ -187,9 +187,8 @@ let TestShader;
 
 async function GenerateOpenglImage()
 {
-	//	Headless is a magic name at the moment
-	//	todo: rename to false or null
-	const Window = new Pop.Gui.Window("test");
+	// null -> headless window
+	const Window = new Pop.Gui.Window(null);
 	const Sokol = new Pop.Sokol.Context(Window, "GLView");
 
 	//	create assets
